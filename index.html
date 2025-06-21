@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kidding - Web Developer Portfolio</title>
+    <link rel="shortcut icon" href="Logo Kidding.png" type="image/x-icon">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- AOS Library -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+ :root {
+            --primary-black: #000000;
+            --primary-white: #ffffff;
+            --gray-light: #f5f5f5;
+            --gray-medium: #cccccc;
+            --gray-dark: #333333;
+            --manga-red: #e63946;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--primary-white);
+            color: var(--primary-black);
+            overflow-x: hidden;
+            position: relative;
+            /* Manga Background Elements */
+            background-image: 
+                /* Speed lines */
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0,0,0,0.05) 3px,
+                    rgba(0,0,0,0.05) 4px
+                ),
+                /* Halftone dots */
+                radial-gradient(
+                    circle at 1px 1px,
+                    rgba(0,0,0,0.1) 1px,
+                    transparent 2px
+                );
+            background-size: 100px 100px, 10px 10px;
+            /* Comic book border */
+            border: 8px solid var(--primary-black);
+            min-height: 100vh;
+        }
+        /* Custom Cursor */
+   /* Manga Pencil Cursor */
+.cursor {
+    position: fixed;
+    width: 24px;
+    height: 24px;
+    pointer-events: none;
+    z-index: 9999;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="black"/></svg>') 
+                no-repeat center center;
+    transform: translate(-5px, -5px) rotate(15deg);
+    transition: transform 0.1s ease;
+}
+
+.cursor::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    width: 50px;
+    height: 50px;
+    border: 3px dashed var(--primary-black);
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: spin 4s linear infinite;
+}
+
+.cursor::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 10px;
+    height: 10px;
+    background: var(--primary-black);
+    border-radius: 50%;
+    opacity: 0.5;
+    animation: pulse 1.5s ease infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.3); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 0.5; }
+}
+
+/* Cursor states */
+a:hover ~ .cursor,
+button:hover ~ .cursor,
+.project-card:hover ~ .cursor {
+    transform: translate(-5px, -5px) rotate(15deg) scale(1.5);
+    filter: drop-shadow(0 0 3px rgba(0,0,0,0.5));
+}
+
+.nav-links a:hover ~ .cursor {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="white"/></svg>') 
+                no-repeat center center;
+}
+
+        /* Loading Screen */
+    /* Manga Comic Loading Screen */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--primary-white);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    transition: opacity 0.5s ease;
+    overflow: hidden;
+}
+
+.loading-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 4rem;
+    font-weight: 700;
+    position: relative;
+    color: var(--primary-black);
+    text-shadow: 3px 3px 0 #ccc, 6px 6px 0 #999;
+    transform: skew(-5deg);
+    margin-bottom: 2rem;
+}
+
+/* Manga speed lines background */
+.loading-screen::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: 
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 20px,
+            var(--primary-black) 21px,
+            var(--primary-black) 22px
+        );
+    animation: speedLines 1s linear infinite;
+    z-index: -1;
+    opacity: 0.1;
+}
+
+/* Comic dots pattern */
+.loading-screen::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 1px 1px, var(--gray-dark) 1px, transparent 2px);
+    background-size: 10px 10px;
+    opacity: 0.1;
+    z-index: -1;
+}
+
+/* Manga speech bubble loader */
+.loading-bubble {
+    width: 120px;
+    height: 80px;
+    background: white;
+    border: 4px solid var(--primary-black);
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 20px solid var(--primary-black);
+    transform: translateX(-50%);
+}
+
+.loading-bubble::after {
+    content: '...';
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--primary-black);
+    position: absolute;
+    animation: comicDots 1.5s infinite steps(4);
+}
+
+/* Manga character (simple version) */
+.loading-character {
+    position: absolute;
+    right: 10%;
+    bottom: 10%;
+    width: 100px;
+    height: 100px;
+    background: 
+        radial-gradient(circle at 30% 30%, white 10%, transparent 11%),
+        radial-gradient(circle at 70% 30%, white 10%, transparent 11%),
+        radial-gradient(circle at 50% 60%, white 35%, transparent 36%),
+        var(--primary-black);
+    border-radius: 50%;
+    border: 4px solid var(--primary-black);
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes speedLines {
+    0% { transform: translateY(0) translateX(0); }
+    100% { transform: translateY(-100px) translateX(-100px); }
+}
+
+@keyframes comicDots {
+    0% { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes mangaPop {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
+}
+
+/* Apply pop animation to text */
+.loading-text {
+    animation: mangaPop 0.8s ease-out forwards;
+}
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--primary-white);
+            border-bottom: 4px solid var(--primary-black);
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: var(--primary-black);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links li a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -10%;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-black);
+            transition: left 0.3s ease;
+            z-index: -1;
+            opacity: 0;
+        }
+
+        .nav-links li a:hover::before {
+            left: 0;
+            opacity: 1;
+        }
+
+        .nav-links li a:hover {
+            color: var(--primary-white);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 80px;
+        }
+
+        section {
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            border-bottom: 4px solid var(--primary-black);
+            position: relative;
+             background-color: var(--primary-white);
+            border: 4px solid var(--primary-black);
+            margin: 20px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 8px 8px 0 var(--gray-medium);
+        }
+        section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 40px 40px 0;
+            border-color: transparent var(--gray-dark) transparent transparent;
+            box-shadow: -2px 2px 3px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--primary-black);
+        }
+
+        /* About Section */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .profile-image {
+            width: 100%;
+            max-width: 300px;
+            height: 400px;
+            background: var(--gray-light);
+            border: 4px solid var(--primary-black);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-image img{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-image::before {            
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .about-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            position: relative;
+            padding: 2rem;
+            border: 3px solid var(--primary-black);
+            background: var(--gray-light);
+        }
+
+        .about-text::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 30px;
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 15px solid var(--primary-black);
+        }
+
+        /* Skills Section */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .skill-card {
+            background: var(--gray-light);
+            border: 3px solid var(--primary-black);
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.4s ease;
+            overflow: hidden;
+        }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--primary-black);
+            border-radius: 50%;
+            transition: all 0.4s ease;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        .skill-card:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 10px 10px 0 var(--primary-black);
+            color: var(--primary-white);
+        }
+
+        .skill-card * {
+            position: relative;
+            z-index: 2;
+            transition: color 0.4s ease;
+        }
+
+        .skill-card i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .skill-card h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* Projects Section */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .project-card {
+            border: 4px solid var(--primary-black);
+            background: var(--gray-light);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateX(0) rotateY(0);
+        }
+
+        .project-card:hover {
+            transform: perspective(1000px) rotateX(5deg) rotateY(5deg) translateY(-15px);
+            box-shadow: 15px 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .project-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .project-card:hover::after {
+            left: 100%;
+        }
+
+        .project-card::before {
+            content: 'POW!';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary-black);
+            color: var(--primary-white);
+            padding: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            transform: rotate(15deg) scale(0);
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+
+        .project-card:hover::before {
+            transform: rotate(15deg) scale(1);
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: rotate(15deg) scale(1) translateY(0); }
+            40% { transform: rotate(15deg) scale(1) translateY(-10px); }
+            60% { transform: rotate(15deg) scale(1) translateY(-5px); }
+        }
+
+        .project-image {
+    height: 200px;
+    background: var(--gray-medium);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    border-bottom: 3px solid var(--primary-black);
+    overflow: hidden; /* Tambahkan ini */
+    position: relative; /* Tambahkan ini */
+}
+
+.project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* atau 'contain' tergantung kebutuhan */
+    transition: transform 0.5s ease; /* Untuk efek zoom */
+}
+.project-card:hover .project-image img {
+    transform: scale(1.05); /* Efek zoom saat hover */
+}
+
+/* Alternatif jika ingin menambahkan overlay */
+.project-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.project-card:hover .project-image::after {
+    opacity: 1;
+}
+
+        .project-content {
+            padding: 2rem;
+        }
+
+        .project-content h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .project-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid var(--primary-black);
+            background: var(--primary-white);
+            color: var(--primary-black);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.4s ease;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--primary-black);
+            transition: all 0.4s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .btn:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+
+        .btn:hover {
+            color: var(--primary-white);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Contact Section */
+        .contact-content {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .social-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--primary-black);
+            padding: 2rem;
+            border: 3px solid var(--primary-black);
+            background: var(--gray-light);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            width: 200px;
+        }
+
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-black);
+            transition: top 0.4s ease;
+        }
+
+        .social-link:hover::before {
+            top: 0;
+        }
+
+        .social-link:hover {
+            transform: translateY(-10px) scale(1.1);
+            box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+            color: var(--primary-white);
+        }
+
+        .social-link * {
+            position: relative;
+            z-index: 2;
+            transition: all 0.4s ease;
+        }
+
+        .social-link:hover i {
+            transform: rotateY(360deg);
+        }
+
+        .social-link i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .social-link span {
+            font-weight: bold;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-white);
+            color: var(--primary-black);
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+             background-color: var(--primary-white);
+            border: 4px solid var(--primary-black);
+            margin: 20px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 8px 8px 0 var(--gray-medium);
+        }
+
+        .footer-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--primary-black);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--gray-medium);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Manga Page Fold Effect */     
+
+        /* Folded corner details */
+        .manga-fold::before {
+          content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            rotate: 90deg;
+            border-style: solid;
+            border-width: 0 40px 40px 0;
+            border-color: transparent var(--gray-dark) transparent transparent;
+            box-shadow: -2px 2px 3px rgba(0,0,0,0.3);
+        }
+
+        /* Explosion Effect */
+        .explosion {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8rem;
+            font-weight: 700;
+            color: var(--primary-black);
+            opacity: 0;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--primary-white);
+                border-top: 2px solid var(--primary-black);
+                display: none;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .loading-text {
+                font-size: 2.5rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .social-links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .manga-fold {
+                height: 70px;
+                clip-path: polygon(
+                    0 0,
+                    100% 0,
+                    100% calc(100% - 30px),
+                    calc(100% - 30px) 100%,
+                    0 100%
+                );
+            }
+            
+            .manga-fold::before {
+                width: 30px;
+                height: 30px;
+            }
+            
+            .manga-fold::after {
+                width: 25px;
+                height: 25px;
+                bottom: 3px;
+                right: 3px;
+            }
+        }
+
+        /* Hide elements initially for AOS */
+        [data-aos] {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+
+    <!-- Loading Screen -->
+<div class="loading-screen" id="loadingScreen">
+    <div class="loading-text">KIDDING</div>
+    <div class="loading-bubble"></div>
+    <div class="loading-character"></div>
+</div>
+
+    <!-- Explosion Effect -->
+    <div class="explosion" id="explosion">BOOM!</div>
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo" id="logo">KIDDING</div>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- About Section -->
+        <section id="about">
+            <div class="container">
+                <h2 class="section-title" data-aos="fade-down">ABOUT ME</h2>
+                <div class="about-content">
+                    <div class="profile-image" data-aos="fade-right"><img src="kiki runner up.jpg" alt=""></div>
+                    <div class="about-text" data-aos="fade-left">
+                        <p>Hello! I'm Muhamad Rizki Ramadan, a passionate Software Engineering student (RPL) in my second year at SMK.</p>
+                        <br>
+                        <p>I enjoy exploring the world of web development — turning ideas into responsive, user-friendly websites using clean and modern code. I’m constantly learning and improving, with a strong interest in front-end design and interactive experiences.</p>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills">
+            <div class="container">
+                <h2 class="section-title" data-aos="fade-down">MY SKILLS</h2>
+                <div class="skills-grid">
+                    <div class="skill-card" data-aos="zoom-in" data-aos-delay="100">
+                        <i class="fab fa-html5"></i>
+                        <h3>HTML5</h3>
+                        <p>Semantic markup and modern HTML standards</p>
+                    </div>
+                    <div class="skill-card" data-aos="zoom-in" data-aos-delay="200">
+                        <i class="fab fa-css3-alt"></i>
+                        <h3>CSS3</h3>
+                        <p>Advanced styling, animations, and responsive design</p>
+                    </div>
+                    <div class="skill-card" data-aos="zoom-in" data-aos-delay="300">
+                        <i class="fab fa-js-square"></i>
+                        <h3>JavaScript</h3>
+                        <p>ES6+, DOM manipulation, and async programming</p>
+                    </div>
+                    <div class="skill-card" data-aos="zoom-in" data-aos-delay="400">
+                        <i class="fab fa-php"></i>
+                        <h3>PHP</h3>
+                        <p>Server-side scripting and database integration</p>
+                    </div>
+                    <div class="skill-card" data-aos="zoom-in" data-aos-delay="500">
+                        <i class="fas fa-database"></i>
+                        <h3>MySQL</h3>
+                        <p>Database design and management</p>
+                    </div>
+                    <div class="skill-card" data-aos="zoom-in" data-aos-delay="600">
+                        <i class="fab fa-git-alt"></i>
+                        <h3>Git</h3>
+                        <p>Version control and collaborative development</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects">
+            <div class="container">
+                <h2 class="section-title" data-aos="fade-down">MY PROJECTS</h2>
+                <div class="projects-grid">
+                    <div class="project-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="project-image"><img src="image1.png" alt=""></div>
+                        <div class="project-content">
+                            <h3>WaterDrill Website</h3>
+                            <p>A responsive website for a water drilling company, built with HTML, CSS, and JavaScript.</p>
+                            <div class="project-buttons">
+                                <a href="https://github.com/Ramadan-dukuh/BorAir" class="btn"><span>View GitHub</span></a>
+                                <a href="https://bor-air.vercel.app/" class="btn"><span>Live Demo</span></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="project-image"><img src="image3.png" alt=""></div>
+                        <div class="project-content">
+                            <h3>Guest Book</h3>
+                            <p>Guest Book website built with PHP and MySQL to manage guest information and responsive.</p>
+                            <div class="project-buttons">
+                                <a href="https://github.com/Ramadan-dukuh/BukuTamu" class="btn"><span>View GitHub</span></a>
+                                <a href="https://bukutamu.infinityfreeapp.com/" class="btn"><span>Live Demo</span></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="project-image"><img src="image2.png" alt=""></div>
+                        <div class="project-content">
+                            <h3>POS-Warung</h3>
+                            <p>System management POS built with PHP and MySQL to manage sales and inventory.</p>
+                            <div class="project-buttons">
+                                <a href="https://github.com/Ramadan-dukuh/Warung" class="btn"><span>View GitHub</span></a>
+                                <a href="https://pos-warung.infinityfreeapp.com/" class="btn"><span>Live Demo</span></a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="project-card" data-aos="fade-up" data-aos-delay="400">
+                        <div class="project-image">Project Screenshot</div>
+                        <div class="project-content">
+                            <h3>Portfolio Website</h3>
+                            <p>This manga-styled portfolio website showcasing my work and skills. Built with HTML, CSS, and JavaScript with custom animations.</p>
+                            <div class="project-buttons">
+                                <a href="#" class="btn"><span>View GitHub</span></a>
+                                <a href="#" class="btn"><span>Live Demo</span></a>
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact">
+            <div class="container">
+                <h2 class="section-title" data-aos="fade-down">GET IN TOUCH</h2>
+                <div class="contact-content">
+                    <p data-aos="fade-up">Ready to work together? Let's create something amazing! Feel free to reach out through any of these platforms.</p>
+                    <div class="social-links">
+                        <a href="mailto:ramadan260906@gmail.com" class="social-link" data-aos="fade-up" data-aos-delay="100">
+                            <i class="fas fa-envelope"></i>
+                            <span>Email</span>
+                        </a>
+                        <a href="https://github.com/Ramadan-dukuh" class="social-link" data-aos="fade-up" data-aos-delay="200">
+                            <i class="fab fa-github"></i>
+                            <span>GitHub</span>
+                        </a>
+                        <a href="https://instagram.com/rmdhn.exe" class="social-link" data-aos="fade-up" data-aos-delay="300">
+                            <i class="fab fa-instagram"></i>
+                            <span>Instagram</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="manga-fold"></div>
+        <div class="footer-turn"></div>
+        <div class="footer-content" data-aos="fade-up">
+            <p>Thanks for scrolling all the way down here!</p>
+            <div class="footer-links">
+                <a href="#about">About</a>
+                <a href="#skills">Skills</a>
+                <a href="#projects">Projects</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <p class="copyright">© 2025 Kidding. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- AOS Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function updateCursor() {
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+            requestAnimationFrame(updateCursor);
+        }
+        updateCursor();
+
+        // Loading Screen
+        window.addEventListener('load', () => {
+            const loadingScreen = document.getElementById('loadingScreen');
+            
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }, 3000);
+        });
+
+        // Logo Explosion Effect
+        const logo = document.getElementById('logo');
+        const explosion = document.getElementById('explosion');
+
+        logo.addEventListener('click', () => {
+            gsap.to(explosion, {
+                opacity: 1,
+                scale: 1.5,
+                duration: 0.1,
+                ease: "power2.out",
+                onComplete: () => {
+                    gsap.to(explosion, {
+                        opacity: 0,
+                        scale: 1,
+                        duration: 0.5,
+                        ease: "power2.in"
+                    });
+                }
+            });
+        });
+
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // GSAP Animations for special effects
+        gsap.registerPlugin();
+
+        // Animate skill cards on hover
+        document.querySelectorAll('.skill-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                gsap.to(card, {
+                    scale: 1.05,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    scale: 1,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+        });
+
+        // Add cursor effects on hover
+        document.querySelectorAll('a, button, .skill-card, .project-card').forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'scale(2)';
+                cursor.style.opacity = '0.5';
+            });
+
+            element.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'scale(1)';
+                cursor.style.opacity = '1';
+            });
+        });
+
+        // Mobile menu toggle (basic implementation)
+        const navLinks = document.querySelector('.nav-links');
+        let mobileMenuOpen = false;
+
+        // Add mobile menu button for smaller screens
+        if (window.innerWidth <= 768) {
+            const mobileMenuBtn = document.createElement('button');
+            mobileMenuBtn.innerHTML = '☰';
+            mobileMenuBtn.style.cssText = `
+                background: none;
+                border: 2px solid var(--primary-black);
+                font-size: 1.5rem;
+                padding: 0.5rem;
+                cursor: pointer;
+            `;
+            
+            document.querySelector('nav').appendChild(mobileMenuBtn);
+            
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenuOpen = !mobileMenuOpen;
+                navLinks.style.display = mobileMenuOpen ? 'flex' : 'none';
+            });
+        }
+
+        // Add some comic book sound effects on certain interactions
+        const soundEffects = ['POW!', 'BANG!', 'ZAP!', 'BOOM!', 'WHAM!'];
+        
+        function createSoundEffect(x, y) {
+            const effect = document.createElement('div');
+            effect.textContent = soundEffects[Math.floor(Math.random() * soundEffects.length)];
+            effect.style.cssText = `
+                position: fixed;
+                left: ${x}px;
+                top: ${y}px;
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 2rem;
+                font-weight: 700;
+                color: var(--primary-black);
+                pointer-events: none;
+                z-index: 9999;
+                transform: translate(-50%, -50%);
+            `;
+            
+            document.body.appendChild(effect);
+            
+            gsap.fromTo(effect, 
+                { opacity: 0, scale: 0, rotation: 0 },
+                { 
+                    opacity: 1, 
+                    scale: 1.5, 
+                    rotation: 360,
+                    duration: 0.3,
+                    ease: "back.out(1.7)",
+                    onComplete: () => {
+                        gsap.to(effect, {
+                            opacity: 0,
+                            y: -50,
+                            scale: 2,
+                            duration: 0.7,
+                            ease: "power2.out",
+                            onComplete: () => effect.remove()
+                        });
+                    }
+                }
+            );
+        }
+
+        // Add sound effects to project cards
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                createSoundEffect(e.clientX, e.clientY);
+            });
+        });
+
+        // Enhanced project card hover effect with tilt
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const angleX = (y - centerY) / 20;
+                const angleY = (centerX - x) / 20;
+                
+                gsap.to(card, {
+                    rotationX: angleX,
+                    rotationY: angleY,
+                    duration: 0.5,
+                    ease: "power2.out"
+                });
+            });
+
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    rotationX: 0,
+                    rotationY: 0,
+                    duration: 0.5,
+                    ease: "elastic.out(1, 0.3)"
+                });
+            });
+        });
+    </script>
+</body>
+</html>
